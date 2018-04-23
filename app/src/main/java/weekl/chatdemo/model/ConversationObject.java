@@ -9,6 +9,7 @@ public class ConversationObject {
     public String target;
     public String msg;
     public String time;
+    public long originTime;
 
     public ConversationObject() {
         super();
@@ -23,5 +24,6 @@ public class ConversationObject {
         }
         this.msg = msgObject.msgText;
         this.time = msgObject.getConversationLastTime();
+        this.originTime = msgObject.time;
     }
 }

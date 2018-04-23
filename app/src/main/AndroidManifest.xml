@@ -64,8 +64,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".contact.ContactActivity" />
-        <activity android:name=".chat.ChatActivity" />
+        <activity android:name=".contact.ContactActivity" android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".chat.ChatActivity" android:windowSoftInputMode="adjustNothing" />
     </application>
 
 </manifest>

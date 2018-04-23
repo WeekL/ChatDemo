@@ -45,7 +45,7 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         setContentView(R.layout.activity_contact);
         initView();
 
-        mPresenter = new ContactBasePresenter(this) ;
+        mPresenter = new ContactBasePresenter(this);
         mMessagePresenter = (IContactPresenter.IMessage)
                 mPresenter.getPresenter(IContactPresenter.Index.INDEX_MESSAGE);
         mContactPresenter = (IContactPresenter.IContact)
@@ -85,15 +85,15 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         titleView.setText(title);
     }
 
-    public IContactPresenter.IMessage getMessagePresenter(){
+    public IContactPresenter.IMessage getMessagePresenter() {
         return mMessagePresenter;
     }
 
-    public IContactPresenter.IContact getContactPresenter(){
+    public IContactPresenter.IContact getContactPresenter() {
         return mContactPresenter;
     }
 
-    public void requestLoadConversations(){
+    public void requestLoadConversations() {
         mPresenter.loadConversations();
     }
 
@@ -112,7 +112,7 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
 
     @Override
     public IContactView getView(Index index) {
-        switch (index){
+        switch (index) {
             case INDEX_CONVERSATION:
                 return conversationFragment;
             case INDEX_FRIEND:
@@ -139,34 +139,35 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         if (exists) {
             ContactActivity.super.onBackPressed();
         } else {
+            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_NEUTRAL:
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putBoolean(alwaysExists, true);
+                            editor.apply();
+                            ContactActivity.super.onBackPressed();
+                            break;
+                        case DialogInterface.BUTTON_POSITIVE:
+                            logout();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            ContactActivity.super.onBackPressed();
+                            break;
+                    }
+                }
+            };
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("注销用户或退出");
-            builder.setPositiveButton("注销", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    logout();
-                }
-            });
-            builder.setNeutralButton("退出，不再提醒", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putBoolean(alwaysExists, true);
-                    editor.apply();
-                    ContactActivity.super.onBackPressed();
-                }
-            });
-            builder.setNegativeButton("退出", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ContactActivity.super.onBackPressed();
-                }
-            });
+            builder.setPositiveButton("注销", listener);
+            builder.setNeutralButton("退出，不再提醒", listener);
+            builder.setNegativeButton("退出", listener);
             builder.create().show();
         }
     }
 
-    public void logout(){
+    public void logout() {
         mPresenter.logout();
     }
 

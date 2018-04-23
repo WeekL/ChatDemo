@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import weekl.chatdemo.R;
@@ -72,6 +74,13 @@ public class ConversationFragment extends Fragment implements IContactView.IConv
 
     @Override
     public void onLoadConversationSuccess(List<ConversationObject> objects) {
+        Collections.sort(objects, new Comparator<ConversationObject>() {
+            @Override
+            public int compare(ConversationObject o1, ConversationObject o2) {
+                int i = (int)(o1.originTime - o2.originTime);
+                return i;
+            }
+        });
         for (ConversationObject object : objects) {
             updateConversation(object);
         }
@@ -80,12 +89,12 @@ public class ConversationFragment extends Fragment implements IContactView.IConv
     @Override
     public void updateConversation(ConversationObject conversationObject) {
         for (ConversationObject object : mConversations) {
-            if (object.target.equals(conversationObject.target)){
+            if (object.target.equals(conversationObject.target)) {
                 mConversations.remove(object);
                 break;
             }
         }
-        mConversations.add(conversationObject);
+        mConversations.add(0, conversationObject);
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
