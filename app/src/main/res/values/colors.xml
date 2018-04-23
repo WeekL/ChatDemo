@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF26A599</color>
+    <color name="colorPrimaryDark">#1c7b72</color>
+    <color name="colorAccent">#6dd8d8</color>
+    <!--登录界面-->
+    <color name="colorLoginText">#666</color>
+    <color name="colorEditCursor">#1c7b72</color>
+    <color name="colorLoginBtn">#FF26A599</color>
+    <!--主界面-->
+    <color name="colorSelected">#FF26A599</color>
+    <color name="colorUnSelected">#606060</color>
+    <!--聊天界面-->
+    <color name="colorTimeBackground">#84939393</color>
+</resources>

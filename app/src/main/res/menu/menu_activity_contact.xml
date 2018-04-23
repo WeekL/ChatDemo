@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/contact_bottom_msg"
+        android:icon="@drawable/bottom_msg"
+        android:title="@string/conversation" />
+    <item
+        android:id="@+id/contact_bottom_contact"
+        android:icon="@drawable/bottom_friend"
+        android:title="@string/contact" />
+    <item
+        android:id="@+id/contact_bottom_more"
+        android:icon="@drawable/bottom_more"
+        android:title="@string/more" />
+</menu>
