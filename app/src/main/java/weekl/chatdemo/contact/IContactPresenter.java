@@ -48,7 +48,7 @@ public interface IContactPresenter {
          *
          * @param target
          */
-        void deleteConversation(String target);
+        void deleteConversation(String target,boolean deleteRecord);
 
         /**
          * 获取消息监听器

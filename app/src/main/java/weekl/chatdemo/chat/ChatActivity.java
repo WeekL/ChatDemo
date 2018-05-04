@@ -3,6 +3,7 @@ package weekl.chatdemo.chat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,10 +35,8 @@ public class ChatActivity extends BaseActivity implements IChat.View {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        Toolbar toolbar = findViewById(R.id.chat_toolbar);
-        setSupportActionBar(toolbar);
+
         mTarget = getIntent().getStringExtra("target");
-        setTitle("");
         initView();
 
         mPresenter = new ChatPresenter(mTarget, this);
@@ -45,8 +44,10 @@ public class ChatActivity extends BaseActivity implements IChat.View {
     }
 
     private void initView() {
-        TextView titleView = findViewById(R.id.toolbar_title);
-        titleView.setText(mTarget);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(mTarget);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         inputMsg = findViewById(R.id.input_msg);
 
@@ -66,6 +67,18 @@ public class ChatActivity extends BaseActivity implements IChat.View {
                 inputMsg.setText("");
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 
     @Override

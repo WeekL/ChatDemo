@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         app:queryHint="搜索会话"/>
 
-    <ListView
+    <weekl.chatdemo.view.SwipeRecyclerView
         android:id="@+id/conversation_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

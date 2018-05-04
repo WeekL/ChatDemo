@@ -13,17 +13,15 @@ import com.hyphenate.chat.EMClient;
 public abstract class BaseActivity extends AppCompatActivity {
     private EMClient mClient;
     private String mCurUser;
-    protected int mToolbarHeight;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        }
-        //getResources().getDimension(android.R.attr.actionBarSize)
+        }*/
         init();
     }
 

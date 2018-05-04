@@ -23,8 +23,8 @@ public class MessagePresenter extends BasePresenter implements
     }
 
     @Override
-    public void deleteConversation(String target) {
-
+    public void deleteConversation(String target, boolean deleteRecord) {
+        getEMClient().chatManager().deleteConversation(target,deleteRecord);
     }
 
     @Override

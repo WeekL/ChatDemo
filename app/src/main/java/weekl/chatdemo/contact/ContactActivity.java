@@ -4,31 +4,29 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hyphenate.chat.EMClient;
-
-import java.util.List;
-
 import weekl.chatdemo.R;
 import weekl.chatdemo.base.BaseActivity;
-import weekl.chatdemo.login.LoginActivity;
-import weekl.chatdemo.model.ConversationObject;
 import weekl.chatdemo.chat.ChatActivity;
-import weekl.chatdemo.model.User;
+import weekl.chatdemo.contact.fragment.ConversationFragment;
+import weekl.chatdemo.contact.fragment.FriendFragment;
+import weekl.chatdemo.contact.fragment.MoreFragment;
+import weekl.chatdemo.login.LoginActivity;
 
 public class ContactActivity extends BaseActivity implements IContactView.IView {
-    private RelativeLayout mToolbar;
+    private Toolbar mToolbar;
     private BottomNavigationView bottomNavigation;
 
     private ConversationFragment conversationFragment;
@@ -53,11 +51,13 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
     }
 
     private void initView() {
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+
         conversationFragment = new ConversationFragment();
         friendFragment = new FriendFragment();
         moreFragment = new MoreFragment();
 
-        mToolbar = findViewById(R.id.toolbar);
         bottomNavigation = findViewById(R.id.contact_bottom_view);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -81,8 +81,19 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
     }
 
     public void setToolbarTitle(String title) {
-        TextView titleView = mToolbar.findViewById(R.id.toolbar_title);
-        titleView.setText(title);
+        getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_action_contact,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     public IContactPresenter.IMessage getMessagePresenter() {

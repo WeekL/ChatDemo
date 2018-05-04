@@ -8,6 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="PopupMenuTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:actionMenuTextColor">#000</item>
+        <item name="overlapAnchor">false</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="LoginEditText">
         <item name="android:textColorHint">@color/colorLoginText</item>
         <item name="android:textColor">@color/colorLoginText</item>

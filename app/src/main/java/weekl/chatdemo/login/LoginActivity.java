@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +20,7 @@ import weekl.chatdemo.contact.ContactActivity;
 public class LoginActivity extends BaseActivity implements ILogin.View {
     private ILogin.Presenter mPresenter;
 
-    private RelativeLayout mToolbar;
+    private Toolbar mToolbar;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
     private ProgressDialog dialog;
@@ -28,7 +29,9 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         mPresenter = new LoginPresenter(this);
         loginFragment = new LoginFragment();
         registerFragment = new RegisterFragment();
@@ -41,8 +44,7 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
     }
 
     public void setToolbarTitle(String title) {
-        TextView titleView = mToolbar.findViewById(R.id.toolbar_title);
-        titleView.setText(title);
+        getSupportActionBar().setTitle(title);
     }
 
     @Override

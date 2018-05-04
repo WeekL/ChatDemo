@@ -6,7 +6,9 @@
     android:orientation="vertical"
     tools:context=".login.LoginActivity">
 
-    <include layout="@layout/toolbar" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <FrameLayout
         android:id="@+id/login_content"

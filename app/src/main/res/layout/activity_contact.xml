@@ -7,14 +7,16 @@
     android:orientation="vertical"
     tools:context=".contact.ContactActivity">
 
-    <include layout="@layout/toolbar" />
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <FrameLayout
         android:id="@+id/contact_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fitsSystemWindows="true"/>
+        android:fitsSystemWindows="true" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/contact_bottom_view"
@@ -23,6 +25,6 @@
         android:background="#fff"
         app:itemIconTint="@drawable/selector_bottom_item"
         app:itemTextColor="@drawable/selector_bottom_item"
-        app:menu="@menu/menu_activity_contact" />
+        app:menu="@menu/menu_bottom_contact" />
 
 </LinearLayout>
