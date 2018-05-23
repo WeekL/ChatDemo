@@ -42,6 +42,7 @@
             android:name="com.hyphenate.chat.EMJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <!-- 声明SDK所需的receiver -->
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
             <intent-filter>
@@ -64,8 +65,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".contact.ContactActivity" android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".chat.ChatActivity" android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".contact.ContactActivity"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".chat.ChatActivity"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".contact.ui.UserInfoActivity" />
+
     </application>
 
 </manifest>

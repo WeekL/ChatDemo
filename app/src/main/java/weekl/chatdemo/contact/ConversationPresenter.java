@@ -9,22 +9,22 @@ import java.util.List;
 
 import weekl.chatdemo.base.BasePresenter;
 import weekl.chatdemo.model.ConversationObject;
-import weekl.chatdemo.model.MsgObject;
 
-public class MessagePresenter extends BasePresenter implements
+public class ConversationPresenter extends BasePresenter implements
         IContactPresenter.IMessage, EMMessageListener {
-    private static final String TAG = "MessagePresenter";
+    private static final String TAG = "ConversationPresenter";
+
     private IContactView.IConversationView mView;
 
-    public MessagePresenter(IContactView.IConversationView IConversation){
+    ConversationPresenter(IContactView.IConversationView IConversation) {
         super();
+        mView = IConversation;
         getEMClient().chatManager().addMessageListener(this);
-        this.mView = IConversation;
     }
 
     @Override
     public void deleteConversation(String target, boolean deleteRecord) {
-        getEMClient().chatManager().deleteConversation(target,deleteRecord);
+        getEMClient().chatManager().deleteConversation(target, deleteRecord);
     }
 
     @Override
@@ -40,15 +40,9 @@ public class MessagePresenter extends BasePresenter implements
     //消息监听事件
     @Override
     public void onMessageReceived(List<EMMessage> list) {
-        for (EMMessage message : list) {
+        for (final EMMessage message : list) {
             Log.i(TAG, "收到消息: " + message);
-            final MsgObject object = new MsgObject(message);
-            getHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mView.updateConversation(new ConversationObject(object));
-                }
-            });
+            getHandler().post(() -> mView.updateConversation(new ConversationObject(message)));
         }
     }
 

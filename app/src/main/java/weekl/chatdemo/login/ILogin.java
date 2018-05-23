@@ -1,11 +1,12 @@
 package weekl.chatdemo.login;
 
+
 public interface ILogin {
     interface View{
         //登录成功
         void onLoginSuccess();
         //注册成功
-        void onRegisterSuccess(String userName, String password);
+        void onRegisterSuccess();
         //执行失败
         void onError();
         //展现提示

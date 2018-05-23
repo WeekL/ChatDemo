@@ -38,7 +38,7 @@ public class MsgObject {
      *
      * @return
      */
-    public String getConversationLastTime() {
+    public static String getConversationLastTime(long time) {
         long currentTime = System.currentTimeMillis();
         String msgTime = DateUtil.getTimeFromTime(time);
 

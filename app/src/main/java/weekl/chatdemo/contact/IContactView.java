@@ -6,7 +6,7 @@ import weekl.chatdemo.model.ConversationObject;
 import weekl.chatdemo.model.User;
 
 public interface IContactView {
-    enum Index{
+    enum Index {
         INDEX_CONVERSATION,
         INDEX_FRIEND,
         INDEX_MORE
@@ -28,6 +28,7 @@ public interface IContactView {
     }
 
     interface IConversationView extends IContactView {
+
         /**
          * 加载会话列表成功
          */
@@ -68,6 +69,7 @@ public interface IContactView {
 
         /**
          * 删除好友成功
+         *
          * @param name
          */
         void onDeleteSuccess(String name);
@@ -88,7 +90,7 @@ public interface IContactView {
         void onContactInvited(String name, String reason);
     }
 
-    interface IMoreView extends IContactView {
+    interface ISettingView extends IContactView {
 
     }
 }

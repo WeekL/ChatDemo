@@ -11,5 +11,5 @@
     <item
         android:id="@+id/contact_bottom_more"
         android:icon="@drawable/bottom_more"
-        android:title="@string/more" />
+        android:title="@string/setting" />
 </menu>

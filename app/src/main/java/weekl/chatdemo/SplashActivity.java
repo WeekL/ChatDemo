@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.hyphenate.chat.EMClient;
 
+import cn.bmob.v3.Bmob;
 import weekl.chatdemo.contact.ContactActivity;
 import weekl.chatdemo.login.LoginActivity;
 
@@ -23,6 +24,8 @@ public class SplashActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
         setContentView(R.layout.activity_splash);
+
+        Bmob.initialize(this,"7337858e29a3ebe8e4fafab3dc8fe70f");
 
         if (getEMClient().isLoggedInBefore()) {
             //自动登录,加载所有本地群和会话

@@ -6,32 +6,28 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import weekl.chatdemo.R;
 import weekl.chatdemo.base.BaseActivity;
 import weekl.chatdemo.chat.ChatActivity;
-import weekl.chatdemo.contact.fragment.ConversationFragment;
-import weekl.chatdemo.contact.fragment.FriendFragment;
-import weekl.chatdemo.contact.fragment.MoreFragment;
+import weekl.chatdemo.contact.ui.ConversationFragment;
+import weekl.chatdemo.contact.ui.FriendFragment;
+import weekl.chatdemo.contact.ui.SettingFragment;
 import weekl.chatdemo.login.LoginActivity;
 
 public class ContactActivity extends BaseActivity implements IContactView.IView {
-    private Toolbar mToolbar;
-    private BottomNavigationView bottomNavigation;
+    private static final String TAG = "ContactActivity";
 
     private ConversationFragment conversationFragment;
     private FriendFragment friendFragment;
-    private MoreFragment moreFragment;
+    private SettingFragment settingFragment;
 
     private IContactPresenter.IPresenter mPresenter;
     private IContactPresenter.IMessage mMessagePresenter;
@@ -43,50 +39,60 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         setContentView(R.layout.activity_contact);
         initView();
 
-        mPresenter = new ContactBasePresenter(this);
+        //初始化presenter
+        mPresenter = new MainPresenter(this);
         mMessagePresenter = (IContactPresenter.IMessage)
                 mPresenter.getPresenter(IContactPresenter.Index.INDEX_MESSAGE);
         mContactPresenter = (IContactPresenter.IContact)
                 mPresenter.getPresenter(IContactPresenter.Index.INDEX_CONTACT);
     }
 
+    /**
+     * 初始化控件
+     */
     private void initView() {
-        mToolbar = findViewById(R.id.toolbar);
+        Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
         conversationFragment = new ConversationFragment();
         friendFragment = new FriendFragment();
-        moreFragment = new MoreFragment();
+        settingFragment = new SettingFragment();
 
-        bottomNavigation = findViewById(R.id.contact_bottom_view);
-        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.contact_bottom_msg:
-                        replaceFragment(conversationFragment);
-                        break;
-                    case R.id.contact_bottom_contact:
-                        replaceFragment(friendFragment);
-                        break;
-                    case R.id.contact_bottom_more:
-                        replaceFragment(moreFragment);
-                        break;
-                }
-                return true;
+        BottomNavigationView bottomNavigation = findViewById(R.id.contact_bottom_view);
+        bottomNavigation.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.contact_bottom_msg:
+                    replaceFragment(conversationFragment);
+                    break;
+                case R.id.contact_bottom_contact:
+                    replaceFragment(friendFragment);
+                    break;
+                case R.id.contact_bottom_more:
+                    ((FrameLayout) findViewById(R.id.contact_content)).removeAllViews();
+                    getFragmentManager().beginTransaction().replace(R.id.contact_content, new SettingFragment()).commit();
+                    break;
             }
+            return true;
         });
         replaceFragment(conversationFragment);
         bottomNavigation.getMenu().getItem(0).setChecked(true);
     }
 
+    /**
+     * 设置标题
+     *
+     * @param title
+     */
     public void setToolbarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
     }
 
+    //菜单
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_action_contact,menu);
+        getMenuInflater().inflate(R.menu.menu_action_contact, menu);
         return true;
     }
 
@@ -96,6 +102,7 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         return true;
     }
 
+    //获取presenter
     public IContactPresenter.IMessage getMessagePresenter() {
         return mMessagePresenter;
     }
@@ -104,23 +111,25 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         return mContactPresenter;
     }
 
+    //请求加载回话列表
     public void requestLoadConversations() {
         mPresenter.loadConversations();
     }
 
-    private void replaceFragment(Fragment fragment) {
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.contact_content, fragment);
-        transaction.commit();
+    //切换碎片
+    public void replaceFragment(Fragment fragment) {
+        ((FrameLayout) findViewById(R.id.contact_content)).removeAllViews();
+        getSupportFragmentManager().beginTransaction().replace(R.id.contact_content, fragment).commit();
     }
 
-    public void openConversation(String target) {
+    //开始聊天
+    public void openConversation(String targetId) {
         Intent intent = new Intent(ContactActivity.this, ChatActivity.class);
-        intent.putExtra("target", target);
+        intent.putExtra("target", targetId);
         startActivity(intent);
     }
 
+    //获取fragment实例
     @Override
     public IContactView getView(Index index) {
         switch (index) {
@@ -129,11 +138,10 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
             case INDEX_FRIEND:
                 return friendFragment;
             case INDEX_MORE:
-                return moreFragment;
+                return settingFragment;
         }
         return null;
     }
-
 
     @Override
     protected void onResume() {
@@ -150,23 +158,20 @@ public class ContactActivity extends BaseActivity implements IContactView.IView 
         if (exists) {
             ContactActivity.super.onBackPressed();
         } else {
-            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_NEUTRAL:
-                            SharedPreferences.Editor editor = pref.edit();
-                            editor.putBoolean(alwaysExists, true);
-                            editor.apply();
-                            ContactActivity.super.onBackPressed();
-                            break;
-                        case DialogInterface.BUTTON_POSITIVE:
-                            logout();
-                            break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            ContactActivity.super.onBackPressed();
-                            break;
-                    }
+            DialogInterface.OnClickListener listener = (dialog, which) -> {
+                switch (which) {
+                    case DialogInterface.BUTTON_NEUTRAL:
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putBoolean(alwaysExists, true);
+                        editor.apply();
+                        ContactActivity.super.onBackPressed();
+                        break;
+                    case DialogInterface.BUTTON_POSITIVE:
+                        logout();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        ContactActivity.super.onBackPressed();
+                        break;
                 }
             };
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

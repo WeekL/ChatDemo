@@ -1,10 +1,12 @@
 package weekl.chatdemo.contact.adapter;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -15,6 +17,9 @@ import weekl.chatdemo.contact.ContactActivity;
 import weekl.chatdemo.contact.IContactPresenter;
 import weekl.chatdemo.model.User;
 
+/**
+ * 好友列表适配器
+ */
 public class FriendAdapter extends CommonAdapter<User> {
     private static final String TAG = "FriendAdapter";
     private ContactActivity mActivity;
@@ -28,13 +33,19 @@ public class FriendAdapter extends CommonAdapter<User> {
 
     @Override
     public void convert(CommonViewHolder holder, final User bean) {
-        final String userName = bean.name;
-        holder.setImageResource(R.id.item_friend_avatar, bean.avatarId);
-        holder.setText(R.id.item_friend_name, userName);
+        //获取好友信息
+        final String friendId = bean.getUserId();
+        final String friendName = bean.getNickName();
+        final String avatarUrl = bean.getAvatarUrl();
+        final String signature = bean.getSignature();
+        holder.setText(R.id.item_friend_name, friendName);
+        holder.setText(R.id.item_friend_signature,signature);
+        ImageView avatarView = holder.getView(R.id.item_friend_avatar);
+        Glide.with(mActivity).load(avatarUrl).into(avatarView);
         holder.getConvertView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActivity.openConversation(userName);
+                mActivity.openConversation(friendId);
             }
         });
         holder.getConvertView().setOnLongClickListener(new View.OnLongClickListener() {
@@ -48,10 +59,10 @@ public class FriendAdapter extends CommonAdapter<User> {
                         Log.d(TAG, "onClick: " + which);
                         switch (which){
                             case 0:
-                                mPresenter.deleteFriend(userName, false);
+                                mPresenter.deleteFriend(friendName, false);
                                 break;
                             case 1:
-                                mPresenter.deleteFriend(userName, true);
+                                mPresenter.deleteFriend(friendName, true);
                                 break;
                         }
                     }
@@ -61,20 +72,5 @@ public class FriendAdapter extends CommonAdapter<User> {
                 return true;
             }
         });
-    }
-
-    private ProgressDialog dialog;
-
-    private void showProgressDialog() {
-        if (dialog == null || !dialog.isShowing()) {
-            dialog = new ProgressDialog(mActivity);
-            dialog.show();
-        }
-    }
-
-    private void closeProgressDialog() {
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
-        }
     }
 }

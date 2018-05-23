@@ -1,19 +1,16 @@
-package weekl.chatdemo.contact.fragment;
+package weekl.chatdemo.contact.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import weekl.chatdemo.R;
@@ -33,7 +30,6 @@ public class ConversationFragment extends Fragment implements IContactView.IConv
     private ConversationAdapter mAdapter;
 
     private List<ConversationObject> mConversations;
-
     public ConversationFragment() {
         super();
         mConversations = new ArrayList<>();
@@ -63,13 +59,13 @@ public class ConversationFragment extends Fragment implements IContactView.IConv
 
     @Override
     public void onLoadConversationSuccess(List<ConversationObject> objects) {
+        if (objects == null){
+            return;
+        }
         //对历史会话记录进行排序
-        Collections.sort(objects, new Comparator<ConversationObject>() {
-            @Override
-            public int compare(ConversationObject o1, ConversationObject o2) {
-                int i = (int) (o1.originTime - o2.originTime);
-                return i;
-            }
+        Collections.sort(objects, (o1, o2) -> {
+            int i = (int) (o1.originTime - o2.originTime);
+            return i;
         });
         for (ConversationObject object : objects) {
             updateConversation(object);
@@ -78,9 +74,10 @@ public class ConversationFragment extends Fragment implements IContactView.IConv
 
     @Override
     public void updateConversation(ConversationObject conversationObject) {
+        //移除原先的会话，此处可考虑使用RecyclerView的移动子项实现
         for (int i = 0; i < mConversations.size(); i++) {
             ConversationObject object = mConversations.get(i);
-            if (object.target.equals(conversationObject.target)){
+            if (object.userId.equals(conversationObject.userId)){
                 mConversations.remove(object);
             }
         }
@@ -89,11 +86,17 @@ public class ConversationFragment extends Fragment implements IContactView.IConv
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
-        Log.d(TAG, "更新会话： " + mAdapter.getItemCount());
+        Log.d(TAG, "更新会话： " + (mAdapter != null ? mAdapter.getItemCount() : 0));
     }
 
     @Override
     public void onDeleteConversationSuccess(String target) {
+        /*if (mAdapter != null && mAdapter.getItemPosition(target) != -1){
+            int position = mAdapter.getItemPosition(target);
+            mConversations.remove(position);
+            mAdapter.notifyItemRemoved(position);
+            Log.d(TAG, "删除会话" + position + target);
+        }*/
         for (int i = 0; i < mConversations.size(); i++) {
             ConversationObject object = mConversations.get(i);
             if (object.target.equals(target)){

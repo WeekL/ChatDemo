@@ -4,13 +4,12 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.util.Log;
 import android.widget.Toast;
 
 import weekl.chatdemo.R;
@@ -18,9 +17,9 @@ import weekl.chatdemo.base.BaseActivity;
 import weekl.chatdemo.contact.ContactActivity;
 
 public class LoginActivity extends BaseActivity implements ILogin.View {
+    private static final String TAG = "LoginActivity";
     private ILogin.Presenter mPresenter;
 
-    private Toolbar mToolbar;
     private LoginFragment loginFragment;
     private RegisterFragment registerFragment;
     private ProgressDialog dialog;
@@ -30,7 +29,7 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mToolbar = findViewById(R.id.toolbar);
+         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mPresenter = new LoginPresenter(this);
         loginFragment = new LoginFragment();
@@ -38,13 +37,15 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
         replaceFragment(0);
 
         String defUser = getIntent().getStringExtra("userName");
-        if (defUser != null){
+        if (defUser != null) {
             loginFragment.setUserName(defUser);
         }
     }
 
     public void setToolbarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     @Override
@@ -52,13 +53,13 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
-        Intent intent = new Intent(LoginActivity.this,ContactActivity.class);
+        Intent intent = new Intent(LoginActivity.this, ContactActivity.class);
         startActivity(intent);
         finish();
     }
 
     @Override
-    public void onRegisterSuccess(final String userName, final String password) {
+    public void onRegisterSuccess() {
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
@@ -67,10 +68,10 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
         builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mPresenter.login(userName,password);
+                registerFragment.goLogin();
             }
         });
-        builder.setNegativeButton("否",null);
+        builder.setNegativeButton("否", null);
         builder.create().show();
     }
 
@@ -96,18 +97,21 @@ public class LoginActivity extends BaseActivity implements ILogin.View {
 
     @Override
     public void replaceFragment(int index) {
-        Fragment fragment = loginFragment;
-        switch (index){
+        Fragment fragment;
+        switch (index) {
             case 0:
                 fragment = loginFragment;
                 break;
             case 1:
                 fragment = registerFragment;
                 break;
+            default:
+                Log.e(TAG, "登陆/注册碎片切换出错，index = " + index);
+                return;
         }
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.login_content,fragment);
+        transaction.replace(R.id.login_content, fragment);
         transaction.commit();
     }
 

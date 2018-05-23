@@ -17,8 +17,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private ILogin.Presenter mPresenter;
     private View mView;
     private EditText userNameView, passwordView, repeatView;
-    private Button registerView;
-    private TextView goLoginView;
+
+    private String userName,password;
 
     @Nullable
     @Override
@@ -30,8 +30,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             userNameView = mView.findViewById(R.id.register_userName);
             passwordView = mView.findViewById(R.id.register_password);
             repeatView = mView.findViewById(R.id.register_repeat);
-            registerView = mView.findViewById(R.id.btn_register);
-            goLoginView = mView.findViewById(R.id.tv_login);
+            Button registerView = mView.findViewById(R.id.btn_register);
+            TextView goLoginView = mView.findViewById(R.id.tv_login);
 
             registerView.setOnClickListener(this);
             goLoginView.setOnClickListener(this);
@@ -43,8 +43,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register:
-                String userName = userNameView.getText().toString().trim();
-                String password = passwordView.getText().toString().trim();
+                userName = userNameView.getText().toString().trim();
+                password = passwordView.getText().toString().trim();
                 String repeat = repeatView.getText().toString().trim();
                 if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)
                         || TextUtils.isEmpty(repeat) || !password.equals(repeat)) {
@@ -56,5 +56,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                 mPresenter.replaceFragment(0);
                 break;
         }
+    }
+
+    public void goLogin(){
+        mPresenter.login(userName,password);
     }
 }

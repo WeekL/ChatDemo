@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,15 +17,16 @@ import weekl.chatdemo.R;
 import weekl.chatdemo.adapter.ChatMessageAdapter;
 import weekl.chatdemo.base.BaseActivity;
 import weekl.chatdemo.model.MsgObject;
+import weekl.chatdemo.model.User;
+import weekl.chatdemo.util.BmobUtil;
 
 public class ChatActivity extends BaseActivity implements IChat.View {
     private static final String TAG = "ChatActivity";
     private IChat.Presenter mPresenter;
-    private String mTarget;
+    private User mTarget;
 
     private ListView mChatMsgContent;
     private EditText inputMsg;
-    private Button sendBtn;
 
     private ChatMessageAdapter mMsgAdapter;
     private List<MsgObject> mMsgObjects;
@@ -36,18 +36,32 @@ public class ChatActivity extends BaseActivity implements IChat.View {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        mTarget = getIntent().getStringExtra("target");
+        String targetId = getIntent().getStringExtra("target");
+        Log.d(TAG, "onCreate: 获取对象id:" + targetId);
+        BmobUtil.findUser(targetId, new BmobUtil.FindUserListener() {
+            @Override
+            public void onSuccess(User user) {
+                mTarget = user;
+            }
+
+            @Override
+            public void onError(int errorCode, String errorMsg) {
+                Log.e(TAG, "查找用户信息失败："+errorCode+","+errorMsg);
+            }
+        });
         initView();
 
-        mPresenter = new ChatPresenter(mTarget, this);
+        mPresenter = new ChatPresenter(targetId, this);
         mPresenter.loadMsgRecord();
     }
 
     private void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(mTarget);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null && mTarget != null) {
+            getSupportActionBar().setTitle(mTarget.getNickName());
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         inputMsg = findViewById(R.id.input_msg);
 
@@ -58,7 +72,7 @@ public class ChatActivity extends BaseActivity implements IChat.View {
 
         mChatMsgContent.setAdapter(mMsgAdapter);
 
-        sendBtn = findViewById(R.id.send_msg);
+        Button sendBtn = findViewById(R.id.send_msg);
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

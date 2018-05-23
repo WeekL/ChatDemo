@@ -1,8 +1,7 @@
-package weekl.chatdemo.contact.fragment;
+package weekl.chatdemo.contact.ui;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +34,10 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
     private IContactPresenter.IContact mPresenter;
     private View mView;
 
-
     //好友列表容器ListView
     private ListView friendListView;
     //好友列表
-    private List<User> friends;
+    private List<User> friendList;
     //好友列表适配器
     private FriendAdapter friendAdapter;
 
@@ -61,7 +58,7 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
     public FriendFragment() {
         super();
         functionViews = new ArrayList<>();
-        friends = new ArrayList<>();
+        friendList = new ArrayList<>();
         applyInfos = new ArrayList<>();
     }
 
@@ -121,18 +118,23 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
 
         //好友列表
         friendListView = mView.findViewById(R.id.friend_list);
-        friendAdapter = new FriendAdapter(mActivity, friends);
+        friendAdapter = new FriendAdapter(mActivity, friendList);
         friendListView.setAdapter(friendAdapter);
 
         //好友申请列表
         applyAdapter = new ApplyAdapter(mActivity, applyInfos);
     }
 
+    /**
+     * 根据好友账号删除好友
+     *
+     * @param name
+     */
     @Override
     public void onDeleteSuccess(String name) {
-        for (User user : friends) {
-            if (user.name.equals(name)) {
-                friends.remove(user);
+        for (User user : friendList) {
+            if (user.getUserId().equals(name)) {
+                friendList.remove(user);
                 if (friendAdapter != null) {
                     friendAdapter.notifyDataSetChanged();
                 }
@@ -149,14 +151,14 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
     @Override
     public void addFriend(User friend) {
         boolean isExists = false;
-        for (User user : friends) {
-            if (user.name.equals(friend.name)) {
+        for (User user : friendList) {
+            if (user.getUserId().equals(friend.getUserId())) {
                 isExists = true;
                 break;
             }
         }
         if (!isExists) {
-            friends.add(friend);
+            friendList.add(friend);
             if (friendAdapter != null) {
                 friendAdapter.notifyDataSetChanged();
             }
@@ -207,8 +209,10 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
 
     @Override
     public void onLoadFriendSuccess(List<User> userList) {
-        for (User friend : userList) {
-            addFriend(friend);
+        friendList.clear();
+        friendList.addAll(userList);
+        if (friendAdapter != null) {
+            friendAdapter.notifyDataSetChanged();
         }
     }
 
@@ -224,15 +228,12 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
         builder.setView(convertView);
         final EditText inputName = convertView.findViewById(R.id.add_friend_name);
         final EditText inputReason = convertView.findViewById(R.id.add_friend_reason);
-        builder.setPositiveButton("发送", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = inputName.getText().toString();
-                String reason = inputReason.getText().toString();
-                showProgressDialog();
-                mPresenter.sendApply(name, reason);
-                closeProgressDialog();
-            }
+        builder.setPositiveButton("发送", (dialog, which) -> {
+            String name = inputName.getText().toString();
+            String reason = inputReason.getText().toString();
+            showProgressDialog();
+            mPresenter.sendApply(name, reason);
+            closeProgressDialog();
         });
         builder.setNegativeButton("取消", null);
         return builder.create();
@@ -256,20 +257,16 @@ public class FriendFragment extends Fragment implements IContactView.IFriendView
     /**
      * FriendFunction的监听
      */
-    private View.OnClickListener functionClickListener = new View.OnClickListener() {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void onClick(View v) {
-            switch ((String) v.getTag()) {
-                case "添加好友":
-                    getAddFriendDialog().show();
-                    break;
-                case "新朋友":
-                    getNewFriendDialog().show();
-                    break;
-                case "群聊":
-                    break;
-            }
+    private View.OnClickListener functionClickListener = v -> {
+        switch ((String) v.getTag()) {
+            case "添加好友":
+                getAddFriendDialog().show();
+                break;
+            case "新朋友":
+                getNewFriendDialog().show();
+                break;
+            case "群聊":
+                break;
         }
     };
 

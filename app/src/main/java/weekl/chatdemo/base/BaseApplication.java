@@ -1,15 +1,18 @@
 package weekl.chatdemo.base;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 
 public class BaseApplication extends Application {
+    private static BaseApplication mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = this;
         initEM();
     }
 
@@ -28,5 +31,9 @@ public class BaseApplication extends Application {
         EMClient.getInstance().init(this, options);
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
+    }
+
+    public static Context getContext(){
+        return mContext;
     }
 }
